@@ -1,0 +1,9 @@
+[package]
+name = "dnd_dice_qt"
+version = "0.1.0"
+edition = "2024"
+license="MIT"
+
+[dependencies]
+qtbridge = "0.1.4"
+tyche = "0.3.1"
