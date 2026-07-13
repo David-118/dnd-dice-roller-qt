@@ -7,7 +7,8 @@ import dnd_dice_qt
 Kirigami.ApplicationWindow {
     id: root
     title: "DnD Dice Roller"
-   
+    property string currentExpression: ""
+
     Kirigami.PageRow {
         anchors.fill: parent
         globalToolBar.style: Kirigami.ApplicationHeaderStyle.Auto
@@ -69,6 +70,11 @@ Kirigami.ApplicationWindow {
     
                         onAccepted: accept()
                     }
+
+                    Binding {
+                        expressionInput.text: currentExpression
+                    }
+                    
                     Controls.Button {
                         id: rollBtn
                         Layout.alignment: Qt.AlignBottom
@@ -107,16 +113,27 @@ Kirigami.ApplicationWindow {
 
                                 Controls.Label { 
                                     text:  historyItemRoot.rolls 
+                                    elide: Text.ElideRight
                                     Layout.fillWidth: true
+                                }
+
+                                Rectangle {
+                                    width: 8 * historyItem.height
                                 }
                             }
 
                             actions: [
                                 Kirigami.Action {
+                                    icon.name: "text-field"
+                                    text: "Edit Roll"
+                                    onTriggered: currentExpression = historyItemRoot.expression
+                                },
+
+                                Kirigami.Action {
                                     icon.name: "view-refresh"
                                     text: "Reroll"
                                     onTriggered: model.processExpression(historyItemRoot.expression)
-                                }
+                                },
                             ]
                         }
                     }
