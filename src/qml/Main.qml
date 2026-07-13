@@ -10,20 +10,52 @@ Kirigami.ApplicationWindow {
     width: 600
     height: 600
     pageStack.initialPage: initPage
-
+    
     Component {
         id: initPage
         Kirigami.Page {
             title: "Dice Roller"
             GridLayout {
                 anchors.fill: parent
-                columns: 2
+                columns: 3
 
                 DiceBackend {
                     id: model
+                    historyModel: HistoryModel {
+                        id: historyModel
+                    }
                     onTopTextChange: (text) => result.text = text
                     onBottomTextChange: (text) => rolls.text = text
                 }
+
+                
+                Component {
+                    id: historyDelegate
+                    Item {
+                        id: item
+                        required property string expression
+                        required property string rolls
+                        required property string result
+                        width: 200 
+                        height: 60
+                        Column {
+                            Controls.Label { text: '<b>Expr:</b> ' + item.expression }
+                            Controls.Label { text: '<b>Rolls:</b> ' + item.rolls }
+                            Controls.Label { text: '<b>Result:</b> ' + item.result }
+                        }
+                    }
+                }
+
+                ListView {
+                    width:200
+                    Layout.rowSpan: 2
+                    Layout.fillHeight: true
+
+                    model: historyModel
+                    delegate: historyDelegate
+
+                }
+
                 Kirigami.AbstractCard {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -38,7 +70,7 @@ Kirigami.ApplicationWindow {
                             Layout.fillWidth: true
                             horizontalAlignment: Text.AlignHCenter
                             id: result
-                            text: "10"
+                            text: ""
                             font.pixelSize: 50
                         }
                         Controls.Label {
@@ -47,7 +79,7 @@ Kirigami.ApplicationWindow {
 
                             id: rolls
                             wrapMode: Text.Wrap
-                            text: "1d20 [10] + 2d12 [8, 7]"
+                            text: ""
                             font.pixelSize: 20
                         }
                         }

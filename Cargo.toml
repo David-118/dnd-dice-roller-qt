@@ -5,5 +5,5 @@ edition = "2024"
 license="MIT"
 
 [dependencies]
-qtbridge = "0.1.4"
+qtbridge = "0.2.0"
 tyche = "0.3.1"
