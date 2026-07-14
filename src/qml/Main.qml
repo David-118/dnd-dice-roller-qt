@@ -10,6 +10,7 @@ Kirigami.ApplicationWindow {
     property string currentExpression: ""
 
     Kirigami.PageRow {
+        id: pages
         anchors.fill: parent
         globalToolBar.style: Kirigami.ApplicationHeaderStyle.Auto
         initialPage: [historyPage, initPage]
@@ -21,29 +22,28 @@ Kirigami.ApplicationWindow {
                 GridLayout {
                     anchors.fill: parent
                     columns: 2
-                    Kirigami.AbstractCard {
+                    Controls.Pane {
+                        Layout.columnSpan:2
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        Layout.columnSpan: 2
-
-                        contentItem: Controls.Pane {
-                            ColumnLayout {
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                Controls.Label {
-                                    Layout.fillWidth: true
-                                    horizontalAlignment: Text.AlignHCenter
-                                    id: result
-                                    text: ""
-                                    font.pixelSize: 50
-                                    Component.onCompleted: {
-                                        model.topTextChange.connect((text) => result.text = text)
-                                    }
-
+                        ColumnLayout {
+                            anchors.fill: parent
+                            visible: result.text.length != 0
+                            Controls.Label {
+                                Layout.fillWidth: true
+                                horizontalAlignment: Text.AlignHCenter
+                                id: result
+                                font.pixelSize: 50
+                                Component.onCompleted: {
+                                    model.topTextChange.connect((text) => result.text = text)
                                 }
-                                Controls.Label {
-                                    Layout.fillWidth: true
+
+                            }
+                            Controls.ScrollView {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                Controls.TextArea {
+                                    readOnly: true
                                     horizontalAlignment: Text.AlignHCenter
                                     id: rolls
                                     wrapMode: Text.Wrap
@@ -53,6 +53,19 @@ Kirigami.ApplicationWindow {
                                         model.bottomTextChange.connect((text) => rolls.text = text)
                                     }
                                 }
+                            }
+                        }
+                        ColumnLayout {
+                            anchors.fill: parent
+                            visible: result.text.length == 0
+                            Controls.Label {
+                                text:"<h2> Welcome to Dnd Dice Roller (QT)</h2>
+                                <p> 
+                                    For help with the sytax please refer to the tyche-rs 
+                                    <a href='https://github.com/Gawdl3y/tyche-rs/blob/main/README.md#features'>README</a> file</p>
+                                </p>
+                                <p>
+                                    To get started enter an expression such as <code>1d20</code> or <code>1d6 + 2</code>"
                             }
                         }
                     }
@@ -72,7 +85,10 @@ Kirigami.ApplicationWindow {
                     }
 
                     Binding {
-                        expressionInput.text: currentExpression
+                        expressionInput.text: {
+                            expressionInput.forceActiveFocus();
+                            return currentExpression;
+                        }
                     }
                     
                     Controls.Button {
@@ -88,7 +104,6 @@ Kirigami.ApplicationWindow {
         Component {
             id: historyPage
             Kirigami.ScrollablePage {
-                Kirigami.Theme.colorSet: Kirigami.Theme.Window
                 title: "History"
                 Component {
                     id: historyDelegate
@@ -118,7 +133,7 @@ Kirigami.ApplicationWindow {
                                 }
 
                                 Rectangle {
-                                    width: 8 * historyItem.height
+                                    width: 6 * historyItem.height
                                 }
                             }
 
@@ -126,7 +141,10 @@ Kirigami.ApplicationWindow {
                                 Kirigami.Action {
                                     icon.name: "text-field"
                                     text: "Edit Roll"
-                                    onTriggered: currentExpression = historyItemRoot.expression
+                                    onTriggered: () => { 
+                                        pages.goForward()
+                                        currentExpression = historyItemRoot.expression
+                                    }
                                 },
 
                                 Kirigami.Action {
@@ -143,6 +161,14 @@ Kirigami.ApplicationWindow {
                     id: historyView
                     model: historyModel
                     delegate: historyDelegate
+                    Controls.Label {
+                        anchors.fill: parent
+                        horizontalAlignment: Qt.AlignHCenter
+                        verticalAlignment: Qt.AlignVCenter
+                        visible: parent.count == 0
+                        text: "Nothing to See Here!"
+                    }
+
                 }
             }
     
