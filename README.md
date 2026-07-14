@@ -9,7 +9,7 @@ Install build dependcies
 ```bash
 sudo dnf install qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtquickcontrols2-devel
 sudo dnf install qt6-qtbase-private-devel
-sudo dnf rustup
+sudo dnf install rustup
 ```
 
 If you have not setup your rust tool chain run
